@@ -1,4 +1,8 @@
 import streamlit as st
+from RAG import initialize_milvus, query_rag
+
+with st.spinner("Initializing Milvus"):
+    vector_store = initialize_milvus()
 
 # Initialize the session state for storing chat messages and chat history
 if "messages" not in st.session_state:
@@ -36,6 +40,9 @@ with st.sidebar:
         st.session_state.active_chat_index = None  # Reset active chat index
         st.rerun()  # <-- CHANGED FROM st.experimental_rerun() TO st.rerun()
 
+with st.spinner("Initializing Milvus"):
+    vector_store = initialize_milvus()
+
 # Display existing chat messages
 for message in st.session_state.messages:
     if message["role"] == "user":
@@ -59,8 +66,8 @@ if prompt := st.chat_input("Ask me anything!"):
         st.write(prompt)
 
     # Simulated assistant response
-    response = f"You said: '{prompt}' - I'm a simulated assistant!"
-
+    # response = f"You said: '{prompt}' - I'm a simulated assistant!"
+    response = query_rag(prompt)
     # Save assistant's response
     st.session_state.messages.append({"role": "assistant", "content": response})
 
